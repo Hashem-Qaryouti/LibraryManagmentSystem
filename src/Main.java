@@ -8,8 +8,5 @@ public class Main  {
         //admin.saveUsernameDB();
         CurrentAdmin.setAdmin(admin);
 
-
-
-
     }
 }
