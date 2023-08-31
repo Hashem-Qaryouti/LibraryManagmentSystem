@@ -33,7 +33,7 @@ public class Admin extends Person {
             preparedStatement.setString(3,password);
             preparedStatement.setString(4,role);
             preparedStatement.executeUpdate();
-            System.out.println("People.Admin saved to the database");
+            System.out.println("Admin is saved to the database");
         }
         catch (SQLException e){
             e.printStackTrace();
