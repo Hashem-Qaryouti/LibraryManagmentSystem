@@ -18,11 +18,11 @@ public class Librarian extends Person {
     {
         super(id,username,password,role);
         usersCreated = new ArrayList<>();
+        connection = DatabaseConnection.getInstance().getConnection();
     }
 
     public void saveCredentialsDB()
     {
-        connection= DatabaseConnection.getInstance().getConnection();
         int id = this.getID();
         String username = this.getUsername();
         String password = this.getPassword();
@@ -48,7 +48,6 @@ public class Librarian extends Person {
 
     }
     public boolean deleteUser(int id){
-        connection = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM USERS WHERE ID = ?";
         try(PreparedStatement ps = connection.prepareStatement(query)){
             ps.setInt(1,id);

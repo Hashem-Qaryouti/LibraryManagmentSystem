@@ -4,6 +4,7 @@ import Database.DatabaseConnection;
 import GraphicalUserInterfaces.AdminInterfaces.DeleteLibrarianInterface;
 
 import javax.swing.*;
+import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,9 +19,9 @@ public class Admin extends Person {
     {
         super(id,username,password,role);
         librarians = new ArrayList<>();
+        connection = DatabaseConnection.getInstance().getConnection();
     }
     public void saveUsernameDB(){
-        connection = DatabaseConnection.getInstance().getConnection();
         int id = this.getID();
         String username = this.getUsername();
         String password = this.getPassword();
@@ -47,7 +48,6 @@ public class Admin extends Person {
         newLibrarian.saveCredentialsDB();
     }
     public boolean deleteLibrarian(String id){
-        connection = DatabaseConnection.getInstance().getConnection();
         int LibrarianID = Integer.parseInt(id);
         // check if the librarian exists in the database or not.
         String LibrarianCheck = "SELECT COUNT(*) FROM USERS WHERE ID = ?";
@@ -83,7 +83,6 @@ public class Admin extends Person {
     }
 
     public void RetrieveLibrariansInformation(){
-        connection = DatabaseConnection.getInstance().getConnection();
         String LibrariansInfo = "SELECT * FROM USERS WHERE ROLE = 'Librarian'";
         try(PreparedStatement ps = connection.prepareStatement(LibrariansInfo)){
             ResultSet resultSet = ps.executeQuery();
