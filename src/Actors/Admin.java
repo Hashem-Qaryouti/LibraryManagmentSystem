@@ -4,7 +4,6 @@ import Database.DatabaseConnection;
 import GraphicalUserInterfaces.AdminInterfaces.DeleteLibrarianInterface;
 
 import javax.swing.*;
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
