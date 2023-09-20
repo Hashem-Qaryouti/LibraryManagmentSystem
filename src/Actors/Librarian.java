@@ -1,9 +1,11 @@
 package Actors;
 
 import Database.DatabaseConnection;
-import oracle.jdbc.proxy.annotation.Pre;
+import GraphicalUserInterfaces.LibrarianInterfaces.LibrarianInterface.AuthorPanel;
 
 
+
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
@@ -72,7 +74,7 @@ public class Librarian extends Person {
         return true;
     }
 
-    public boolean saveBook(String ISBN, String title, int quantity, String releaseDate, String authorID, String firstName,String lastName,String gender, String nationality){
+    public boolean saveBook(String ISBN, String title, int quantity, String releaseDate, ArrayList<AuthorPanel> authorpanels){
             // save the book information to the book table in the database.
             String bookQuery = "INSERT INTO BOOK VALUES (?,?,?,TO_DATE(?,'DD-MON-YY'))";
             try(PreparedStatement ps = connection.prepareStatement(bookQuery)){
@@ -87,6 +89,12 @@ public class Librarian extends Person {
 
             }
             // Save the author information to the database
+        for (AuthorPanel authorPanel: authorpanels){
+            String authorID= authorPanel.getAuthorID();
+            String firstName = authorPanel.getAuthorFirstName();
+            String lastName =authorPanel.getAuthorLastName();
+            String gender = authorPanel.getAuthorGender();
+            String nationality = authorPanel.getAuthorNationality();
             String authorQuery = "INSERT INTO AUTHOR VALUES (?,?,?,?,?)";
             try(PreparedStatement psAuthor = connection.prepareStatement(authorQuery)){
                 psAuthor.setString(1,authorID);
@@ -100,7 +108,7 @@ public class Librarian extends Person {
                 e.printStackTrace();
             }
             // save bookISBN, AuthorID oto the AuthorBook table in the database
-            saveAuthorBookInfo(ISBN,authorID);
+            saveAuthorBookInfo(ISBN,authorID);}
             return true;
     }
     public void saveAuthorBookInfo(String ISBN, String authorID){

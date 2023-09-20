@@ -6,12 +6,12 @@ import Database.DatabaseConnection;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
-import java.awt.image.BandCombineOp;
-import java.sql.Connection;
+import java.util.ArrayList;
 
 public class LibrarianInterface implements ActionListener {
     private JFrame librarianFrame;
     private JPanel mainPanel,userPanel,delUserPanel, addBookPanel,authorPanel;
+    private ArrayList<AuthorPanel> authorPanels;
     private JLabel id,username,password,userdelID,bookISBN,bookTitle,bookQuantity,bookReleaseDate;
     private JButton addUser,delUserButton,addAuthor, saveBook;
     private JTextField idText,usernameText, passwordText,deluserID,bookISBNText,bookTitleText,bookQuantityText,bookReleaseDateText;
@@ -24,6 +24,7 @@ public class LibrarianInterface implements ActionListener {
     public LibrarianInterface(Librarian currentLibrarian){
         this.currentLibrarian = currentLibrarian;
         makeFrame();
+        authorPanels = new ArrayList<>();
     }
 
     public void makeFrame(){
@@ -166,7 +167,8 @@ public class LibrarianInterface implements ActionListener {
         else if (event.getSource() == addAuthor){
             //Design addAuthor panel
 
-            JPanel authorCard =  new AuthorPanel(++authorsCount);
+            AuthorPanel authorCard =  new AuthorPanel(++authorsCount);
+            authorPanels.add(authorCard);
             authorPanel.add(authorCard);
             authorPanel.revalidate();
             authorPanel.repaint();
@@ -182,17 +184,19 @@ public class LibrarianInterface implements ActionListener {
             String lastName = "";
             String nationality = "";
             String gender = "";
-            for (Component component: authorPanel.getComponents()){
-                    if (component instanceof AuthorPanel){
+            for (AuthorPanel authorPanel: authorPanels) {
+                for (Component component : authorPanel.getComponents()) {
+                    if (component instanceof AuthorPanel) {
                         AuthorPanel panel = (AuthorPanel) component;
-                        authorID = authorID +  panel.getAuthorID();
+                        authorID = panel.getAuthorID();
                         firstName = panel.getAuthorFirstName();
                         lastName = panel.getAuthorLastName();
                         nationality = panel.getAuthorNationality();
                         gender = panel.getAuthorGender();
                     }
+                }
             }
-            boolean saveStatus = currentLibrarian.saveBook(ISBN,title,quantity,releaseDate,authorID,firstName,lastName, gender,nationality);
+            boolean saveStatus = currentLibrarian.saveBook(ISBN,title,quantity,releaseDate,authorPanels);
             JOptionPane.showMessageDialog(librarianFrame,"The author and book information saved to the database");
         }
 
