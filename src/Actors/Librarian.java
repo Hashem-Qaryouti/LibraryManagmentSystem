@@ -1,9 +1,9 @@
 package Actors;
 
 import Database.DatabaseConnection;
-import GraphicalUserInterfaces.LibrarianInterfaces.LibrarianInterface;
+import oracle.jdbc.proxy.annotation.Pre;
 
-import javax.swing.*;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
@@ -71,5 +71,50 @@ public class Librarian extends Person {
         }
         return true;
     }
+
+    public boolean saveBook(String ISBN, String title, int quantity, String releaseDate, String authorID, String firstName,String lastName,String gender, String nationality){
+            // save the book information to the book table in the database.
+            String bookQuery = "INSERT INTO BOOK VALUES (?,?,?,TO_DATE(?,'DD-MON-YY'))";
+            try(PreparedStatement ps = connection.prepareStatement(bookQuery)){
+                ps.setString(1,ISBN);
+                ps.setString(2,title);
+                ps.setInt(3,quantity);
+                ps.setString(4,releaseDate);
+                ps.executeUpdate();
+            }
+            catch(SQLException e){
+                e.printStackTrace();
+
+            }
+            // Save the author information to the database
+            String authorQuery = "INSERT INTO AUTHOR VALUES (?,?,?,?,?)";
+            try(PreparedStatement psAuthor = connection.prepareStatement(authorQuery)){
+                psAuthor.setString(1,authorID);
+                psAuthor.setString(2,firstName);
+                psAuthor.setString(3,lastName);
+                psAuthor.setString(4,gender);
+                psAuthor.setString(5,nationality);
+                psAuthor.executeUpdate();
+            }
+            catch (SQLException e){
+                e.printStackTrace();
+            }
+            // save bookISBN, AuthorID oto the AuthorBook table in the database
+            saveAuthorBookInfo(ISBN,authorID);
+            return true;
+    }
+    public void saveAuthorBookInfo(String ISBN, String authorID){
+        String authorBookQuery = "INSERT INTO BOOK_AUTHOR VALUES (?,?)";
+        try(PreparedStatement ps = connection.prepareStatement(authorBookQuery)){
+            ps.setString(1,ISBN);
+            ps.setString(2,authorID);
+            ps.executeUpdate();
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+
 
 }
