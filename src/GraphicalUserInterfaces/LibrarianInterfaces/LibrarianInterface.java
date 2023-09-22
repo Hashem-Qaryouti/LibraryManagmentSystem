@@ -10,11 +10,12 @@ import java.util.ArrayList;
 
 public class LibrarianInterface implements ActionListener {
     private JFrame librarianFrame;
-    private JPanel mainPanel,userPanel,delUserPanel, addBookPanel,authorPanel;
+    private JPanel mainPanel,userPanel,delUserPanel, addBookPanel,authorPanel,delBookPanel;
     private ArrayList<AuthorPanel> authorPanels;
-    private JLabel id,username,password,userdelID,bookISBN,bookTitle,bookQuantity,bookReleaseDate;
-    private JButton addUser,delUserButton,addAuthor, saveBook;
-    private JTextField idText,usernameText, passwordText,deluserID,bookISBNText,bookTitleText,bookQuantityText,bookReleaseDateText;
+    private JLabel id,username,password,userdelID,bookISBN,bookTitle,bookQuantity,bookReleaseDate,deleteBook;
+    private JButton addUser,delUserButton,addAuthor, saveBook,deleteBookButton;
+    private JTextField idText,usernameText, passwordText,deluserID,bookISBNText,bookTitleText,bookQuantityText,bookReleaseDateText,
+    delBookText;
     private Librarian currentLibrarian;
     private int authorsCount = 0;
     private DatabaseConnection connection;
@@ -50,9 +51,17 @@ public class LibrarianInterface implements ActionListener {
         userPanel.add(password);
         userPanel.add(passwordText);
         userPanel.add(addUser);
-        // Card Layout "Add Book"
-
-
+        // Delete Book using the ISBN
+        deleteBook = new JLabel("Delete Book: ");
+        deleteBookButton = new JButton("Delete Book");
+        delBookText = new JTextField(15);
+        delBookText.getPreferredSize();
+        delBookPanel = new JPanel();
+        delBookPanel.setLayout(new GridLayout(1,3));
+        delBookPanel.add(deleteBook);
+        delBookPanel.add(delBookText);
+        delBookPanel.add(deleteBookButton);
+        deleteBookButton.addActionListener(this);
 
         //Delete User Frame
         delUserPanel = new JPanel();
@@ -135,6 +144,7 @@ public class LibrarianInterface implements ActionListener {
         mainPanel.add(userPanel);
         mainPanel.add(delUserPanel);
         mainPanel.add(addBookPanel);
+        mainPanel.add(delBookPanel);
 
         librarianFrame.getContentPane().add(mainPanel);
         librarianFrame.setVisible(true);
@@ -198,6 +208,16 @@ public class LibrarianInterface implements ActionListener {
             }
             boolean saveStatus = currentLibrarian.saveBook(ISBN,title,quantity,releaseDate,authorPanels);
             JOptionPane.showMessageDialog(librarianFrame,"The author and book information saved to the database");
+        }
+        else if (event.getSource() == deleteBookButton){
+            String ISBN = delBookText.getText();
+            boolean status = currentLibrarian.deleteBook(ISBN);
+            if (status == true){
+                JOptionPane.showMessageDialog(librarianFrame,"The book is deleted successfully!");
+            }
+            else{
+                JOptionPane.showMessageDialog(librarianFrame,"The Book ID is not found!");
+            }
         }
 
 

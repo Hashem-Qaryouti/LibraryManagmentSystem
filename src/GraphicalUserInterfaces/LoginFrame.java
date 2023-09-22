@@ -1,12 +1,12 @@
 package GraphicalUserInterfaces;
 
 import Actors.Librarian;
+import Actors.User;
 import Database.DatabaseConnection;
 import GraphicalUserInterfaces.AdminInterfaces.AdminInterface;
 import GraphicalUserInterfaces.LibrarianInterfaces.*;
-import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
+import GraphicalUserInterfaces.UserInterfaces.UserInterface;
 
-import javax.sound.midi.SysexMessage;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -25,6 +25,7 @@ public class LoginFrame implements ActionListener {
 
     public LoginFrame(){
         makeFrame();
+        connection = DatabaseConnection.getInstance().getConnection();
     }
     public void makeFrame(){
         loginFrame = new JFrame("Library Management System");
@@ -43,6 +44,7 @@ public class LoginFrame implements ActionListener {
         t1 = new JTextField();
         t2 = new JTextField();
 
+
         GridLayout gridLayout = new GridLayout(2,2);
         panel1.setLayout(gridLayout);
         panel1.add(l1);
@@ -60,6 +62,7 @@ public class LoginFrame implements ActionListener {
         mainPanel.add(panel2);
         mainPanel.add(panel3);
         mainPanel.add(panel4);
+
         loginFrame.getContentPane().add(mainPanel);
         loginFrame.setVisible(true);
     }
@@ -78,7 +81,6 @@ public class LoginFrame implements ActionListener {
     public void CheckAdminCredentials() {
         String username = t1.getText();
         String password = t2.getText();
-        connection = DatabaseConnection.getInstance().getConnection();
         String usernameDBQuery = "SELECT USERNAME FROM USERS WHERE ID = 1";
         String passwordDBQuery = "SELECT PASSWORD FROM USERS WHERE ID = 1";
 
@@ -111,7 +113,6 @@ public class LoginFrame implements ActionListener {
     {
         String username = t1.getText();
         String password = t2.getText();
-        connection = DatabaseConnection.getInstance().getConnection();
         String LibrarianQuery = "SELECT * FROM USERS WHERE USERNAME = ?";
         try(PreparedStatement preparedStatement = connection.prepareStatement(LibrarianQuery)){
             preparedStatement.setString(1,username);
@@ -123,7 +124,6 @@ public class LoginFrame implements ActionListener {
                 String queryPassword = resultSet.getString(3);
                 String queryRole = resultSet.getString(4);
                 Librarian currentLibrarian = new Librarian(id,queryUsername,queryPassword,queryRole);
-                System.out.println(queryID);
                 if (username.equals(queryUsername) && password.equals(queryPassword)){
                     if (queryRole.equals("Librarian")) {
                         JOptionPane.showMessageDialog(null, "Successfully logged in!");
@@ -143,6 +143,32 @@ public class LoginFrame implements ActionListener {
     }
     public void CheckUserCredentials()
     {
+        String username = t1.getText();
+        String password = t2.getText();
+        String userQuery = "SELECT * FROM USERS WHERE USERNAME = ?";
+        try(PreparedStatement ps = connection.prepareStatement(userQuery)){
+            ps.setString(1,username);
+            ResultSet results = ps.executeQuery();
+            if (results.next()){
+                String id = results.getString(1);
+                int queryID = Integer.parseInt(id);
+                String queryUsername = results.getString(2);
+                String queryPassword = results.getString(3);
+                String queryRole = results.getString(4);
+                User currentUser = new User(queryID,queryUsername,queryPassword,queryRole);
+                if (username.equals(queryUsername) && password.equals(queryPassword)){
+                    UserInterface userInterface = new UserInterface(currentUser);
+                    JOptionPane.showMessageDialog(null,"Successfully Logged in!");
+                    loginFrame.setVisible(false);
+                }
+                else {
+                    JOptionPane.showMessageDialog(null,"Invalid User Credentials");
+                }
+            }
 
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+        }
     }
 }

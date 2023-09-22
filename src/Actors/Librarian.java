@@ -2,10 +2,6 @@ package Actors;
 
 import Database.DatabaseConnection;
 import GraphicalUserInterfaces.LibrarianInterfaces.LibrarianInterface.AuthorPanel;
-
-
-
-import javax.swing.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
@@ -86,7 +82,7 @@ public class Librarian extends Person {
             }
             catch(SQLException e){
                 e.printStackTrace();
-
+                return false;
             }
             // Save the author information to the database
         for (AuthorPanel authorPanel: authorpanels){
@@ -106,6 +102,7 @@ public class Librarian extends Person {
             }
             catch (SQLException e){
                 e.printStackTrace();
+                return false;
             }
             // save bookISBN, AuthorID oto the AuthorBook table in the database
             saveAuthorBookInfo(ISBN,authorID);}
@@ -121,6 +118,30 @@ public class Librarian extends Person {
         catch (SQLException e){
             e.printStackTrace();
         }
+    }
+
+    public boolean deleteBook(String ISBN){
+
+        String query = "DELETE FROM BOOK_AUTHOR WHERE ISBN = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)){
+            ps.setString(1,ISBN);
+            ps.executeUpdate();
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+        String deleteQuery = "DELETE FROM BOOK WHERE ISBN = ?";
+        try(PreparedStatement ps = connection.prepareStatement(deleteQuery)){
+            ps.setString(1,ISBN);
+            ps.executeUpdate();
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
 
